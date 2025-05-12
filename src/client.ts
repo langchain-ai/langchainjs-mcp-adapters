@@ -257,8 +257,14 @@ function isStreamableHTTPConnection(
     return true;
   }
 
-  if ("type" in connection && connection.type === "streamable") {
-    return true;
+  if ("url" in connection && typeof connection.url === "string") {
+    try {
+      // eslint-disable-next-line no-new
+      new URL(connection.url);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   return false;
@@ -541,15 +547,33 @@ export class MultiServerMCPClient {
             reconnect
           );
         }
+
+        this._clients[serverName] = client;
+
+        const cleanup = async () => {
+          getDebugLog()(
+            `DEBUG: Closing streamable HTTP transport for server "${serverName}"`
+          );
+          await transport.close();
+        };
+
+        this._cleanupFunctions.push(cleanup);
+
+        // Load tools for this server
+        await this._loadToolsForServer(serverName, client);
       } catch (error) {
         const streamableError = error as StreamableHTTPError;
-        if (
-          streamableError.code == null ||
-          streamableError.code < 400 ||
-          streamableError.code >= 500
-        ) {
+        let { code } = streamableError;
+        // try parsing from error message
+        if (code == null) {
+          const m = streamableError.message.match(/\(HTTP (\d\d\d)\)/);
+          if (m) {
+            code = parseInt(m[1], 10);
+          }
+        }
+        if (code == null || code < 400 || code >= 500) {
           throw new MCPClientError(
-            `Failed to connect to streamable HTTP server "${serverName}": ${error}`,
+            `Failed to connect to streamable HTTP server "${serverName}, url: ${url}": ${error}`,
             serverName
           );
         }
@@ -605,7 +629,7 @@ export class MultiServerMCPClient {
         await this._loadToolsForServer(serverName, client);
       } catch (error) {
         throw new MCPClientError(
-          `Failed to create SSE transport for server "${serverName}": ${error}`,
+          `Failed to create SSE transport for server "${serverName}, url: ${url}": ${error}`,
           serverName
         );
       }

@@ -507,7 +507,7 @@ __metadata:
     "@langchain/langgraph": ^0.2.62
     "@langchain/openai": ^0.5.5
     "@langchain/scripts": ^0.1.3
-    "@modelcontextprotocol/sdk": ^1.10.1
+    "@modelcontextprotocol/sdk": ^1.11.2
     "@tsconfig/recommended": ^1.0.8
     "@types/debug": ^4.1.12
     "@types/express": ^5
@@ -584,9 +584,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/sdk@npm:^1.10.1":
-  version: 1.10.1
-  resolution: "@modelcontextprotocol/sdk@npm:1.10.1"
+"@modelcontextprotocol/sdk@npm:^1.11.2":
+  version: 1.11.2
+  resolution: "@modelcontextprotocol/sdk@npm:1.11.2"
   dependencies:
     content-type: ^1.0.5
     cors: ^2.8.5
@@ -598,7 +598,7 @@ __metadata:
     raw-body: ^3.0.0
     zod: ^3.23.8
     zod-to-json-schema: ^3.24.1
-  checksum: 6bf2d6521ca7d8b71d18022a4c3c9b3b21a79760b50ee4ecbfd5ceaa56236f10db749716e71e9628b1c0da284a037aa8d3cb14c42062978a3d0d4c99732bb362
+  checksum: e774e047b3b6452d691e45b95b302df83e6a9af5376c6553c34327147bcbec30475a74f9825fe9e9d414d22e2af1d7a383bda0ea25812bed0576202af20572d1
   languageName: node
   linkType: hard
 

@@ -54,7 +54,7 @@ describe("MultiServerMCPClient", () => {
     test("should process valid streamable HTTP connection config", async () => {
       const config = {
         "test-server": {
-          transport: "streamable" as const,
+          transport: "http" as const,
           url: "http://localhost:8000/mcp",
         },
       };
@@ -559,7 +559,7 @@ describe("MultiServerMCPClient", () => {
 
       const client = new MultiServerMCPClient({
         "test-server": {
-          transport: "streamable" as const,
+          transport: "http" as const,
           url: "http://localhost:8000/mcp",
         },
       });

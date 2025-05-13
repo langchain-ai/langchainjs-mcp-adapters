@@ -69,7 +69,7 @@ describe("MultiServerMCPClient", () => {
     test("should process valid streamable HTTP connection config", () => {
       const client = new MultiServerMCPClient({
         "test-server": {
-          transport: "streamable",
+          transport: "http",
           url: "http://localhost:8000/mcp",
         },
       });
@@ -134,7 +134,7 @@ describe("MultiServerMCPClient", () => {
     test("should initialize streamable HTTP connections correctly", async () => {
       const client = new MultiServerMCPClient({
         "test-server": {
-          transport: "streamable",
+          transport: "http",
           url: "http://localhost:8000/mcp",
         },
       });
@@ -341,7 +341,7 @@ describe("MultiServerMCPClient", () => {
           url: "http://localhost:8000/sse",
         },
         server3: {
-          transport: "streamable",
+          transport: "http",
           url: "http://localhost:8000/mcp",
         },
       });
@@ -388,7 +388,7 @@ describe("MultiServerMCPClient", () => {
         new MultiServerMCPClient({
           // @ts-expect-error missing url field
           "test-server": {
-            transport: "streamable",
+            transport: "http",
             // Missing url field
           },
         });
@@ -400,7 +400,7 @@ describe("MultiServerMCPClient", () => {
         // eslint-disable-next-line no-new
         new MultiServerMCPClient({
           "test-server": {
-            transport: "streamable",
+            transport: "http",
             url: "invalid-url", // Invalid URL format
           },
         });
@@ -419,7 +419,7 @@ describe("MultiServerMCPClient", () => {
           url: "http://localhost:8000/sse",
         },
         "streamable-server": {
-          transport: "streamable",
+          transport: "http",
           url: "http://localhost:8000/mcp",
         },
       });
@@ -446,7 +446,7 @@ describe("MultiServerMCPClient", () => {
 
       const client = new MultiServerMCPClient({
         "test-server": {
-          transport: "streamable",
+          transport: "http",
           url: "http://localhost:8000/mcp",
         },
       });
@@ -469,7 +469,7 @@ describe("MultiServerMCPClient", () => {
 
       const client = new MultiServerMCPClient({
         "test-server": {
-          transport: "streamable",
+          transport: "http",
           url: "http://localhost:8000/mcp",
         },
       });

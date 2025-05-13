@@ -175,14 +175,12 @@ export function createStreamableHTTPConnectionSchema() {
        * Optional transport type, inferred from the structure of the config. If "sse", will not attempt
        * to connect using streamable HTTP.
        */
-      transport: z
-        .union([z.literal("streamable"), z.literal("sse")])
-        .optional(),
+      transport: z.union([z.literal("http"), z.literal("sse")]).optional(),
       /**
        * Optional transport type, inferred from the structure of the config. If "sse", will not attempt
        * to connect using streamable HTTP.
        */
-      type: z.union([z.literal("streamable"), z.literal("sse")]).optional(),
+      type: z.union([z.literal("http"), z.literal("sse")]).optional(),
       /**
        * The URL to connect to
        */
@@ -373,10 +371,10 @@ function isResolvedStreamableHTTPConnection(
   if (
     ("transport" in connection &&
       typeof connection.transport === "string" &&
-      ["streamable", "sse"].includes(connection.transport)) ||
+      ["http", "sse"].includes(connection.transport)) ||
     ("type" in connection &&
       typeof connection.type === "string" &&
-      ["streamable", "sse"].includes(connection.type))
+      ["http", "sse"].includes(connection.type))
   ) {
     return true;
   }
@@ -692,7 +690,7 @@ export class MultiServerMCPClient {
       `DEBUG: Creating SSE transport for server "${serverName}" with URL: ${url}`
     );
 
-    if (transportType === "streamable" || transportType == null) {
+    if (transportType === "http" || transportType == null) {
       const transport = await this._createStreamableHTTPTransport(
         serverName,
         url,

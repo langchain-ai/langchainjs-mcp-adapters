@@ -35,8 +35,7 @@ import { MultiServerMCPClient } from "../src/index.js";
 // Load environment variables from .env file
 dotenv.config();
 
-const transportType =
-  process.env.MCP_TRANSPORT_TYPE === "sse" ? "sse" : "streamable";
+const transportType = process.env.MCP_TRANSPORT_TYPE === "sse" ? "sse" : "http";
 
 export async function runExample(client?: MultiServerMCPClient) {
   try {

@@ -57,10 +57,6 @@ async function runExample() {
         command: "npx",
         args: ["-y", "@modelcontextprotocol/server-everything"],
       },
-      streamable_http: {
-        transport: "streamable",
-        url: "http://0.0.0.0/mcp",
-      },
     });
 
     // Get the tools (flattened array is the default now)

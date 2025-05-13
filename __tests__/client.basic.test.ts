@@ -107,6 +107,7 @@ describe("MultiServerMCPClient", () => {
         command: "python",
         args: ["./script.py"],
         env: undefined,
+        stderr: "inherit",
       });
 
       expect(Client).toHaveBeenCalled();

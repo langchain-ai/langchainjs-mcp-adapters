@@ -1,6 +1,10 @@
 import { vi, describe, test, expect, beforeEach, type Mock } from "vitest";
 import { ZodError } from "zod";
-import { Connection } from "../src/client.js";
+import type {
+  ClientConfig,
+  Connection,
+  StdioConnection,
+} from "../src/client.js";
 
 import "./mocks.js";
 
@@ -344,6 +348,10 @@ describe("MultiServerMCPClient", () => {
         },
       });
 
+      const conf = client.config;
+      expect(conf.additionalToolNamePrefix).toBe("mcp");
+      expect(conf.prefixToolNameWithServerName).toBe(true);
+
       await client.initializeConnections();
       const tools = await client.getTools();
 
@@ -542,7 +550,7 @@ describe("MultiServerMCPClient", () => {
       // Should not have created a client
       expect(Client).not.toHaveBeenCalled();
     });
-    
+
     test("should throw on streamable HTTP transport creation errors", async () => {
       // Force an error when creating transport
       (StreamableHTTPClientTransport as Mock).mockImplementationOnce(() => {

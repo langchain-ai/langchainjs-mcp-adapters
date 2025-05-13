@@ -1,6 +1,9 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
+import {
+  SSEClientTransport,
+  type SseError,
+} from "@modelcontextprotocol/sdk/client/sse.js";
 import {
   StreamableHTTPClientTransport,
   StreamableHTTPError,
@@ -642,6 +645,19 @@ export class MultiServerMCPClient {
     };
   }
 
+  private _getHttpErrorCode(error: unknown): number | undefined {
+    const streamableError = error as StreamableHTTPError | SseError;
+    let { code } = streamableError;
+    // try parsing from error message if code is not set
+    if (code == null) {
+      const m = streamableError.message.match(/\(HTTP (\d\d\d)\)/);
+      if (m && m.length > 1) {
+        code = parseInt(m[1], 10);
+      }
+    }
+    return code;
+  }
+
   private _toSSEConnectionURL(url: string): string {
     const urlObj = new URL(url);
     const pathnameParts = urlObj.pathname.split("/");
@@ -707,15 +723,7 @@ export class MultiServerMCPClient {
         // Load tools for this server
         await this._loadToolsForServer(serverName, client);
       } catch (error) {
-        const streamableError = error as StreamableHTTPError;
-        let { code } = streamableError;
-        // try parsing from error message
-        if (code == null) {
-          const m = streamableError.message.match(/\(HTTP (\d\d\d)\)/);
-          if (m) {
-            code = parseInt(m[1], 10);
-          }
-        }
+        const code = this._getHttpErrorCode(error);
         if (automaticSSEFallback && code != null && code >= 400 && code < 500) {
           // Streamable HTTP error is a 4xx, so fall back to SSE
           try {
@@ -723,14 +731,22 @@ export class MultiServerMCPClient {
           } catch (firstSSEError) {
             // try one more time, but modify the URL to end with `/sse`
             const sseUrl = this._toSSEConnectionURL(url);
-            try {
-              await this._initializeSSEConnection(serverName, {
-                ...connection,
-                url: sseUrl,
-              });
-            } catch (secondSSEError) {
+
+            if (sseUrl !== url) {
+              try {
+                await this._initializeSSEConnection(serverName, {
+                  ...connection,
+                  url: sseUrl,
+                });
+              } catch (secondSSEError) {
+                throw new MCPClientError(
+                  `Failed to connect to streamable HTTP server "${serverName}, url: ${url}": ${error}. Additionally, tried falling back to SSE at ${url} and ${sseUrl}, but this also failed: ${secondSSEError}`,
+                  serverName
+                );
+              }
+            } else {
               throw new MCPClientError(
-                `Failed to connect to streamable HTTP server "${serverName}, url: ${url}": ${error}. Additionally, tried falling back to SSE at ${url} and ${sseUrl}, and this also failed: ${secondSSEError}`,
+                `Failed to connect to streamable HTTP server after trying to fall back to SSE: "${serverName}, url: ${url}": ${error} (SSE fallback failed with error ${firstSSEError})`,
                 serverName
               );
             }
